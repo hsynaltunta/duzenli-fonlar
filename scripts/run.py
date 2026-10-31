@@ -212,7 +212,8 @@ def render():
          [[r['kod'], *m] for r in out for m in mon[r['kod']]])
     run = jload(os.path.join(DATA, 'run.json'), {})
     sitegen.build(ROOT, uretildi=now_tr().isoformat(timespec='minutes'),
-               son_guncelleme=run.get('son_guncelleme') or run.get('tam_tarama', ''))
+               son_guncelleme=run.get('son_guncelleme') or run.get('tam_tarama', ''),
+               tam_tarama=run.get('tam_tarama', ''))
     print('site üretildi:', len(out), 'fon, veri', END, flush=True)
 
 

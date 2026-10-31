@@ -2,8 +2,8 @@ name: Fon verilerini güncelle
 
 on:
   schedule:
-    - cron: '*/15 4-20 * * 1-5'   # hafta içi 07:00–23:45 (İstanbul): saati gelen fonlar
-    - cron: '35 20 * * 1-5'       # hafta içi 23:35 (İstanbul): tüm fonların taranması
+    - cron: '*/15 4-20 * * *'     # her gün 07:00–23:45 (İstanbul): saati gelen fonlar
+    - cron: '35 20 * * *'         # her gün 23:35 (İstanbul): tüm fonların taranması
   workflow_dispatch:
     inputs:
       mod:
@@ -35,7 +35,7 @@ jobs:
 
       - name: Verileri güncelle
         env:
-          MOD: ${{ github.event.schedule == '35 20 * * 1-5' && 'nightly' || inputs.mod || 'intraday' }}
+          MOD: ${{ github.event.schedule == '35 20 * * *' && 'nightly' || inputs.mod || 'intraday' }}
         run: |
           echo "Mod: $MOD"
           python scripts/run.py "$MOD"

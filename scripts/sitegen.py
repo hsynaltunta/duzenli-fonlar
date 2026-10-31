@@ -67,7 +67,7 @@ svg text{fill:var(--color-fg-muted);font-size:11px;font-family:var(--font-anthro
   window.FZ_META={};
   function load(d){
     store={}; for(const k of ['fonlar','aylik','tarama']) store[k]={status:'ok',data:d[k]||[]};
-    uretildi=d.uretildi; window.FZ_META={uretildi:d.uretildi,son_guncelleme:d.son_guncelleme};
+    uretildi=d.uretildi; window.FZ_META={uretildi:d.uretildi,son_guncelleme:d.son_guncelleme,tam_tarama:d.tam_tarama};
     for(const [id,o] of calcs){
       try{store[id]={status:'ok',data:o.fn(...o.inputs.map(i=>store[i].data))};}
       catch(e){console.error(e);store[id]={status:'error',data:[]};}
@@ -100,7 +100,7 @@ svg text{fill:var(--color-fg-muted);font-size:11px;font-family:var(--font-anthro
 
 FOOT = '''
 <footer class="site-foot">
-  <span>Veriler TEFAS fiyatlarıdır (Ekofin üzerinden). Hafta içi gün boyunca her fon kendi fiyat yayınlama saatinden sonra otomatik güncellenir; her gece tüm fonlar yeniden taranır. Getiriler vergi öncesidir.</span>
+  <span>Veriler TEFAS fiyatlarıdır (Ekofin üzerinden). Her gün, gün boyunca her fon kendi fiyat yayınlama saatinden sonra otomatik güncellenir; her gece tüm fonlar yeniden taranır. TEFAS hafta sonu ve resmi tatillerde fiyat yayınlamaz; bu günlerde fiyatlar son iş gününde kalır. Getiriler vergi öncesidir.</span>
   <span>Geçmiş getiri geleceği garanti etmez. <b>Bu site yatırım tavsiyesi değildir</b>; karar vermeden önce bankanıza ya da aracı kurumunuza danışın.</span>
   <span><a href="gizlilik.html" style="color:inherit">Gizlilik politikası</a></span>
 </footer>
@@ -111,7 +111,7 @@ FOOT = '''
 '''
 
 
-def build(root, uretildi, son_guncelleme):
+def build(root, uretildi, son_guncelleme, tam_tarama=''):
     pub = os.path.join(root, 'public')
     os.makedirs(pub, exist_ok=True)
     page = open(os.path.join(root, 'page.html'), encoding='utf-8').read()
@@ -124,6 +124,7 @@ def build(root, uretildi, son_guncelleme):
             data[k] = list(csv.DictReader(f))
     data['uretildi'] = uretildi
     data['son_guncelleme'] = son_guncelleme
+    data['tam_tarama'] = tam_tarama
     with open(os.path.join(pub, 'data.json'), 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
     import shutil

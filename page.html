@@ -399,8 +399,10 @@
     const run=st.filter(s=>s&&s.k==='run').length, ok=st.filter(s=>s&&s.k==='ok').length;
     el.replaceChildren();
     const a=document.createElement('span');const dot=document.createElement('i');dot.className='fz-dot';
-    const sg=M.son_guncelleme?new Date(M.son_guncelleme):null;
-    a.append(dot,'Otomatik güncelleniyor'+(sg&&!isNaN(sg)?' · son güncelleme '+sg.toLocaleString('tr-TR',{timeZone:'Europe/Istanbul',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):''));
+    const fmtD=s=>{const d=s?new Date(s):null;return d&&!isNaN(d)?d.toLocaleString('tr-TR',{timeZone:'Europe/Istanbul',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}):'';};
+    const sg=fmtD(M.son_guncelleme), tt=fmtD(M.tam_tarama);
+    a.append(dot,'Her gün otomatik güncelleniyor'+(sg?' · son yeni fiyat '+sg:''));
+    if(tt&&M.tam_tarama>(M.son_guncelleme||'')){const k=document.createElement('span');k.textContent='son kontrol '+tt;a.append(' · ',k);}
     el.append(a);
     if(run){const b=document.createElement('span');const sp=document.createElement('i');sp.className='fz-spin';sp.textContent='↻';b.append(sp,`${nf0.format(run)} fonun bugünkü fiyatı bekleniyor`);el.append(b);}
     if(ok){const c=document.createElement('span');c.textContent=`✓ ${nf0.format(ok)} fon bugün güncellendi`;el.append(c);}
