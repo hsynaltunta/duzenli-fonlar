@@ -1,17 +1,25 @@
 """Fiyat geçmişinden fon ölçüleri: eksi gün, dönem getirileri, aylık getiriler ve seçim."""
-import math, collections, datetime as dt
+import math, calendar, collections, datetime as dt
 
 
 def D(s):
     return dt.date.fromisoformat(s)
 
 
+PERS = (3, 6, 9, 12, 18)
+
+
+def back(e, n):
+    """e tarihinden n ay önce (ay kısaysa ayın son günü)."""
+    m = e.month - n
+    y = e.year + (m - 1) // 12
+    m = (m - 1) % 12 + 1
+    return dt.date(y, m, min(e.day, calendar.monthrange(y, m)[1]))
+
+
 def periods(END):
     e = D(END)
-    S12 = e.replace(year=e.year - 1).isoformat() if not (e.month == 2 and e.day == 29) else dt.date(e.year - 1, 2, 28).isoformat()
-    S18 = dt.date(e.year - 1 if e.month > 6 else e.year - 2, (e.month - 18 - 1) % 12 + 1, min(e.day, 28)).isoformat()
-    S6 = dt.date(e.year if e.month > 6 else e.year - 1, (e.month - 6 - 1) % 12 + 1, min(e.day, 28)).isoformat()
-    return S6, S12, S18
+    return {P: back(e, P).isoformat() for P in PERS}
 
 
 def cut_date(today=None):
@@ -34,8 +42,29 @@ def clean(pr):
     return pr, ds
 
 
+def window(pr, ds, start, P):
+    """start tarihindeki son fiyattan bugüne pencere ölçüleri; veri yetmezse None."""
+    base = [d for d in ds if d <= start]
+    if not base:
+        return None
+    w = [d for d in ds if d >= base[-1]]
+    if len(w) < round(P * 16.5):  # ayda ~21 iş günü; boşluklu fiyatları ele
+        return None
+    neg = sum(1 for x, y in zip(w, w[1:]) if pr[y] < pr[x])
+    zero = sum(1 for x, y in zip(w, w[1:]) if pr[y] == pr[x])
+    tot = pr[w[-1]] / pr[w[0]] - 1
+    months = (D(w[-1]) - D(w[0])).days / 30.4375
+    g = (1 + tot) ** (1 / months) - 1 if tot > -1 else -1
+    pk = mdd = 0
+    for d in w:
+        pk = max(pk, pr[d])
+        mdd = min(mdd, pr[d] / pk - 1)
+    ok = neg == 0 and tot > 0 and zero <= math.ceil(25 * P / 12)
+    return dict(neg=neg, zero=zero, tot=tot, g=g, mdd=mdd, ok=ok)
+
+
 def compute(recs, A, END=None):
-    """recs: {kod: detay}, A: {kod: künye}. Dönüş: (satırlar, aylık, tarama, END, S12)"""
+    """recs: {kod: detay}, A: {kod: künye}. Dönüş: (satırlar, aylık, tarama, END, dönem başları)"""
     prepared = []
     for k, o in recs.items():
         pr, ds = clean(dict(o['prices']))
@@ -43,13 +72,14 @@ def compute(recs, A, END=None):
             continue
         prepared.append((k, o, pr, ds))
     if not prepared:
-        return [], {}, {}, END, None
+        return [], {}, {}, END, {}
     END = END or max(r[3][-1] for r in prepared)
     e = D(END)
-    S6, S12, S18 = periods(END)
+    S = periods(END)
     rows = []
     mon = {}
-    tarama = collections.defaultdict(lambda: [0, 0, 0])
+    # risk -> {'guncel': n, P: [yeterli, eksisiz]}
+    tarama = collections.defaultdict(lambda: {'guncel': 0, **{P: [0, 0] for P in PERS}})
     for k, o, pr, ds in prepared:
         a = A.get(k, {})
         try:
@@ -60,63 +90,45 @@ def compute(recs, A, END=None):
             continue
         if ds[-1] < (e - dt.timedelta(days=10)).isoformat():
             continue
-        tarama[risk][0] += 1
-        base = [d for d in ds if d <= S12]
-        if not base:
-            continue
-        w = [d for d in ds if d >= base[-1]]
-        if len(w) < 200:
-            continue
-        wj = [d for d in ds if d >= S18]
+        tarama[risk]['guncel'] += 1
+        wj = [d for d in ds if d >= S[18]]
         if any(pr[y] / pr[x] > 1.4 or pr[y] / pr[x] < 0.7 for x, y in zip(wj, wj[1:])):
             continue  # tek günde %40'tan fazla oynama: veri hatası ya da fon dönüşümü
-        tarama[risk][1] += 1
-        neg = sum(1 for x, y in zip(w, w[1:]) if pr[y] < pr[x])
-        zero = sum(1 for x, y in zip(w, w[1:]) if pr[y] == pr[x])
-        tot = pr[w[-1]] / pr[w[0]] - 1
-        months = (D(w[-1]) - D(w[0])).days / 30.4375
-        g12 = (1 + tot) ** (1 / months) - 1 if tot > -1 else -1
-        pk = 0
-        mdd = 0
-        for d in w:
-            pk = max(pk, pr[d])
-            mdd = min(mdd, pr[d] / pk - 1)
-        b18 = [d for d in ds if d <= S18]
+        W = {P: window(pr, ds, S[P], P) for P in PERS}
+        if not any(W.values()):
+            continue
+        for P in PERS:
+            if W[P]:
+                tarama[risk][P][0] += 1
+                tarama[risk][P][1] += W[P]['ok']
+        b18 = [d for d in ds if d <= S[18]]
         d0 = b18[-1] if b18 else ds[0]
-        m18 = (D(ds[-1]) - D(d0)).days / 30.4375
-        g18 = (pr[ds[-1]] / pr[d0]) ** (1 / m18) - 1
-        w18 = [d for d in ds if d >= d0]
-        tot18 = pr[ds[-1]] / pr[d0] - 1
-        b6 = [d for d in ds if d <= S6]
-        d6 = b6[-1]
-        tot6 = pr[ds[-1]] / pr[d6] - 1
-        g6 = (1 + tot6) ** (1 / ((D(ds[-1]) - D(d6)).days / 30.4375)) - 1
         me = {}
-        for d in w18:
-            me[d[:7]] = d
+        for d in ds:
+            if d >= d0:
+                me[d[:7]] = d
         ms = sorted(me)
         mret = [(b, round((pr[me[b]] / pr[me[a2]] - 1) * 100, 2), me[b]) for a2, b in zip(ms, ms[1:])]
-        full = [x[1] for x in mret if x[0] < END[:7] and x[0] > S12[:7]]
-        regular = neg == 0 and tot > 0 and zero <= 25
-        if regular:
-            tarama[risk][2] += 1
         name = a.get('FON_ADI', k)
-        rows.append(dict(
+        row = dict(
             kod=k, ad=name, kurucu=a.get('KURUCU', ''),
             kategori=(a.get('KATEGORI') or '').replace(' Şemsiye Fonu', ''), tur=o.get('tur') or '',
             alabilir='Nitelikli yatırımcı' if 'SERBEST' in name.upper() else 'Herkes', risk=risk,
             alis_valor=o.get('alis') or '', satis_valor=o.get('satis') or '',
             tefas='Evet' if a.get('TEFAS_ISLEM_DURUMU') else 'Hayır',
             portfoy_mn_tl=round((a.get('FON_TOPLAM_DEGER') or 0) / 1e6, 2), yatirimci=a.get('YATIRIMCI_SAYISI') or 0,
-            stopaj=o.get('stopaj') or '',
-            getiri_1a=a.get('SON_BIR_AY_GETIRISI'), getiri_3a=a.get('SON_UC_AY_GETIRISI'),
-            getiri_6a=round(tot6 * 100, 2), ort_6ay=round(g6 * 100, 2),
-            getiri_1y=round(tot * 100, 2), ort_12ay=round(g12 * 100, 2),
-            getiri_18ay=round(tot18 * 100, 2), ort_18ay=round(g18 * 100, 2), gecmis_18=round(min(m18, 18)),
-            en_dusuk_ay=min(full) if full else '', eksi_gun=neg, sabit_gun=zero, en_buyuk_dusus=round(mdd * 100, 2),
-            son_fiyat_tarihi=ds[-1], veri_tarihi=END, regular=regular))
+            stopaj=o.get('stopaj') or '', getiri_1a=a.get('SON_BIR_AY_GETIRISI'))
+        for P in PERS:
+            w = W[P]
+            row['g%d' % P] = round(w['tot'] * 100, 2) if w else ''
+            row['o%d' % P] = round(w['g'] * 100, 2) if w else ''
+            row['e%d' % P] = w['neg'] if w else ''
+            row['dd%d' % P] = round(w['mdd'] * 100, 2) if w else ''
+            row['d%d' % P] = 1 if w and w['ok'] else 0
+        row.update(son_fiyat_tarihi=ds[-1], veri_tarihi=END, regular=any(w and w['ok'] for w in W.values()))
+        rows.append(row)
         mon[k] = mret
-    return rows, mon, tarama, END, S12
+    return rows, mon, tarama, END, S
 
 
 VAL = {'Aynı gün': 'T+0 (aynı gün)', '1 iş günü': 'T+1', '2 iş günü': 'T+2', '3 iş günü': 'T+3', '4 iş günü': 'T+4'}
@@ -132,7 +144,7 @@ def finish(r):
 
 
 def select(rows):
-    """Yalnız son 12 ayda hiç eksi günü olmayan fonlar."""
+    """Seçilebilen dönemlerden en az birinde hiç eksi günü olmayan fonlar."""
     out = [r for r in rows if r['regular']]
     for r in out:
         r['durum'] = 'Eksi gün yok'

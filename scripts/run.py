@@ -97,11 +97,11 @@ def nightly(src=None):
         print('indirilen', len(recs), 'hata', len(fail), flush=True)
         if len(recs) < len(codes) * 0.9:
             sys.exit('Çok fazla fon indirilemedi, mevcut veri korunuyor.')
-    rows, mon, tarama, END, S12 = compute.compute(recs, A)
+    rows, mon, tarama, END, S = compute.compute(recs, A)
     sel = compute.select(rows)
     print('bitiş', END, 'seçilen', len(sel), flush=True)
     for rk in range(1, 8):
-        print(' risk', rk, tarama[rk], sum(1 for r in sel if r['risk'] == rk))
+        print(' risk', rk, dict(tarama[rk]), sum(1 for r in sel if r['risk'] == rk))
     keep = {r['kod'] for r in sel}
     os.makedirs(PRICES, exist_ok=True)
     for f in glob.glob(os.path.join(PRICES, '*.json')):
@@ -120,8 +120,10 @@ def nightly(src=None):
     jsave(os.path.join(DATA, 'state.json'), state)
     jsave(os.path.join(DATA, 'meta.json'), {k: A.get(k, {}) for k in keep})
     jsave(os.path.join(DATA, 'selection.json'), {r['kod']: r['durum'] for r in sel})
-    wcsv(os.path.join(DATA, 'tarama.csv'), ['risk', 'guncel_fon', 'yeterli_veri', 'eksi_gunu_yok', 'donem_bas', 'donem_bit'],
-         [[rk, *tarama[rk], S12, END] for rk in range(1, 8)])
+    P = compute.PERS
+    wcsv(os.path.join(DATA, 'tarama.csv'),
+         ['risk', 'guncel_fon'] + [f'{n}_{p}' for p in P for n in ('yeterli', 'duzenli', 'bas')] + ['donem_bit'],
+         [[rk, tarama[rk]['guncel']] + [x for p in P for x in (*tarama[rk][p], S[p])] + [END] for rk in range(1, 8)])
     jsave(os.path.join(DATA, 'run.json'), dict(jload(os.path.join(DATA, 'run.json'), {}),
                                                tam_tarama=now_tr().isoformat(timespec='minutes')))
     render()

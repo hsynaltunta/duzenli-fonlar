@@ -179,7 +179,7 @@
     <p class="fz-lede">
       <span data-source="ozet" data-field="donem" data-row="0" class="dash-skeleton">—</span> arasında güncel fiyatı olan
       <b data-source="ozet" data-field="yeterli" data-row="0" class="dash-skeleton">—</b> yatırım fonundan
-      <b data-source="ozet" data-field="duzenli" data-row="0" class="dash-skeleton">—</b> tanesi son 12 ayda hiç eksi gün görmedi.
+      <b data-source="ozet" data-field="duzenli" data-row="0" class="dash-skeleton">—</b> tanesi <span class="fz-per-txt">son 1 yıl</span>da hiç eksi gün görmedi.
       Bu uygulamanın amacı kullanıcıya en az riskle sürekli getiri sağlayan fonları sıralamak.
     </p>
     <p class="fz-live" id="fz-live" hidden></p>
@@ -193,9 +193,11 @@
       <button type="button" id="fz-f-n" data-f="Nitelikli yatırımcı" aria-pressed="false">Nitelikli yatırımcı</button>
     </div>
     <div class="fz-seg fz-per" role="group" aria-label="Dönem">
-      <button type="button" id="fz-p-6" data-p="6" aria-pressed="false">Son 6 ay</button>
-      <button type="button" id="fz-p-12" data-p="12" aria-pressed="false">Son 1 yıl</button>
-      <button type="button" id="fz-p-18" data-p="18" aria-pressed="true">Son 18 ay</button>
+      <button type="button" id="fz-p-3" data-p="3" aria-pressed="false">Son 3 ay</button>
+      <button type="button" id="fz-p-6" data-p="6" aria-pressed="false">6 ay</button>
+      <button type="button" id="fz-p-9" data-p="9" aria-pressed="false">9 ay</button>
+      <button type="button" id="fz-p-12" data-p="12" aria-pressed="true">12 ay</button>
+      <button type="button" id="fz-p-18" data-p="18" aria-pressed="false">18 ay</button>
     </div>
     <div class="fz-seg fz-risk" role="group" aria-label="Risk seviyesi">
       <button type="button" id="fz-r-all" data-r="all" aria-pressed="true">Tüm riskler</button>
@@ -211,17 +213,17 @@
 
   <section class="fz-tiles" id="ozet">
     <div class="fz-tile">
-      <span class="fz-lab">Son 12 ayda eksi günü olmayan</span>
+      <span class="fz-lab"><span class="fz-per-cap">Son 1 yıl</span>da eksi günü olmayan</span>
       <span class="fz-big"><span data-source="ozet" data-field="duzenli" data-row="0" class="dash-skeleton">—</span></span>
       <span class="fz-sub">incelenen <span data-source="ozet" data-field="yeterli" data-row="0">—</span> fondan</span>
     </div>
     <div class="fz-tile">
-      <span class="fz-lab">En yüksek 12 ay getirisi · herkes alabilir</span>
+      <span class="fz-lab">En yüksek getiri (<span class="fz-per-txt">son 1 yıl</span>) · herkes alabilir</span>
       <span class="fz-big"><span data-source="ozet" data-field="herkes_getiri" data-row="0" data-fmt="pct" class="dash-skeleton">—</span></span>
       <span class="fz-sub"><span data-source="ozet" data-field="herkes_kod" data-row="0">—</span> · eksi günü olmayanlar içinde</span>
     </div>
     <div class="fz-tile">
-      <span class="fz-lab">En yüksek 12 ay getirisi · nitelikli yatırımcı</span>
+      <span class="fz-lab">En yüksek getiri (<span class="fz-per-txt">son 1 yıl</span>) · nitelikli yatırımcı</span>
       <span class="fz-big"><span data-source="ozet" data-field="nitelikli_getiri" data-row="0" data-fmt="pct" class="dash-skeleton">—</span></span>
       <span class="fz-sub"><span data-source="ozet" data-field="nitelikli_kod" data-row="0">—</span> · eksi günü olmayanlar içinde</span>
     </div>
@@ -248,7 +250,7 @@
           <label for="fz-c-r1">Aylık getiri, sonda (%)<input id="fz-c-r1" type="number" step="0.05" min="-5" max="20" placeholder="otomatik" autocomplete="off" inputmode="decimal"></label>
         </div>
         <label for="fz-c-stp">Stopaj, kazançtan (%)<input id="fz-c-stp" type="number" step="0.5" min="0" max="50" placeholder="otomatik" autocomplete="off" inputmode="decimal"></label>
-        <p class="fz-note">Getiri alanları seçilen fonun <span class="fz-per-txt">son 18 ay</span>da gerçekleşen ortalama aylık getirisiyle dolar (üstteki dönem seçicisinden değiştirebilirsiniz). Faizlerin düşeceğini düşünüyorsanız "sonda" değerini küçültün; getiri iki değer arasında her ay eşit adımla değişir.</p>
+        <p class="fz-note">Getiri alanları seçilen fonun <span class="fz-per-txt">son 1 yıl</span>da gerçekleşen ortalama aylık getirisiyle dolar (üstteki dönem seçicisinden değiştirebilirsiniz). Faizlerin düşeceğini düşünüyorsanız "sonda" değerini küçültün; getiri iki değer arasında her ay eşit adımla değişir.</p>
       </div>
       <div class="fz-res">
         <div class="fz-rt">
@@ -267,7 +269,7 @@
   <section class="fz-card" id="risk-dagilimi">
     <div style="display:flex;flex-direction:column;gap:var(--cds-gap-xs)">
       <h2>Risk seviyesine göre fonlar</h2>
-      <p class="fz-note">Her seviyede son 12 ay boyunca fiyatı olan fon sayısı (gri) ve bunlardan hiç eksi gün görmeyenler (renkli). Bir seviyeye tıklayınca aşağıdaki tablo o seviyenin fonlarını gösterir; tekrar tıklayınca tüm seviyelere döner.</p>
+      <p class="fz-note">Her seviyede <span class="fz-per-txt">son 1 yıl</span> boyunca fiyatı olan fon sayısı (gri) ve bunlardan hiç eksi gün görmeyenler (renkli). Bir seviyeye tıklayınca aşağıdaki tablo o seviyenin fonlarını gösterir; tekrar tıklayınca tüm seviyelere döner.</p>
     </div>
     <div id="fz-risk-chart" data-source="tarama" class="dash-skeleton"></div>
     <div style="display:flex;flex-direction:column;gap:var(--cds-gap-xs)">
@@ -285,7 +287,7 @@
   <section class="fz-card" id="aylik-tablo">
     <div style="display:flex;flex-direction:column;gap:var(--cds-gap-xs)">
       <h2>Ay ay getiri</h2>
-      <p class="fz-note">Her hücre o ayın getirisi (%); en sağdaki sütun dönemin aylık ortalaması. Koyu renk daha yüksek getiri, sarı zayıf ay, kırmızı eksi ay demek. <span class="fz-per-cap">Son 18 ay</span> gösteriliyor. Fonlar risk seviyesine göre gruplu, grup içinde bu dönemin ortalama aylık getirisine göre sıralı. Boş hücre, fonun o ay henüz kurulmadığını gösterir.</p>
+      <p class="fz-note">Her hücre o ayın getirisi (%); en sağdaki sütun dönemin aylık ortalaması. Koyu renk daha yüksek getiri, sarı zayıf ay, kırmızı eksi ay demek. <span class="fz-per-cap">Son 1 yıl</span> gösteriliyor. Fonlar risk seviyesine göre gruplu, grup içinde bu dönemin ortalama aylık getirisine göre sıralı. Boş hücre, fonun o ay henüz kurulmadığını gösterir.</p>
     </div>
     <div class="fz-legend" aria-hidden="true">
       <span><i id="fz-lg-neg"></i> eksi</span>
@@ -321,10 +323,10 @@
     <div class="fz-card">
       <h2>Nasıl okunur</h2>
       <ul>
-        <li><b>Eksi gün</b>: son 12 ayda fiyatın bir önceki iş gününden düşük kapandığı gün sayısı. Düzenli fonlarda bu sayı sıfır.</li>
-        <li><b>6 ay</b>, <b>12 ay</b> ve <b>18 ay</b>: o dönemdeki toplam getiri. <b>Aylık ort.</b> bunun aylık bileşik karşılığı.</li>
-        <li><b>Aylık ort. (6 / 12 / 18 ay)</b>: o dönemin aylık bileşik getirisi; 18 ayı dolmamış fonlarda kuruluştan bu yana. Hesaplayıcı üstte seçili dönemin ortalamasını kullanır.</li>
-        <li><b>En büyük düşüş</b>: fiyatın önceki zirvesinden en fazla ne kadar geri düştüğü. Sıfır, hiç geri gitmediği anlamına gelir.</li>
+        <li><b>Dönem seçici</b> (3, 6, 9, 12, 18 ay): sayfada yalnız seçilen dönem boyunca hiç eksi günü olmayan fonlar gösterilir. Dönem kısaldıkça liste uzar; uzun dönemde eksisiz kalan fonlar daha istikrarlıdır.</li>
+        <li><b>Eksi gün</b>: fiyatın bir önceki iş gününden düşük kapandığı gün sayısı. Listedeki fonlarda seçili dönem için bu sayı sıfır.</li>
+        <li><b>3 / 6 / 9 / 12 / 18 ay</b>: o dönemdeki toplam getiri. <b>Aylık ort.</b> seçili dönemin aylık bileşik getirisi; hesaplayıcı da bunu kullanır.</li>
+        <li><b>En büyük düşüş</b>: seçili dönemde fiyatın önceki zirvesinden en fazla ne kadar geri düştüğü. Sıfır, hiç geri gitmediği anlamına gelir.</li>
         <li><b>Risk</b>: SPK'nın 1 (en düşük) ile 7 (en yüksek) arasındaki risk değeri.</li>
         <li><b>Valör</b>: emrin kaç iş günü sonra gerçekleştiği. T+0 aynı gün; aynı gün işlem için emir genelde 13:30'a kadar verilmeli.</li>
       </ul>
@@ -332,7 +334,7 @@
     <div class="fz-card">
       <h2>Bilmeniz gerekenler</h2>
       <ul>
-        <li>Emeklilik ve gayrimenkul fonları dahil değil. Son 12 ay boyunca düzenli fiyatı olmayan, yeni kurulan ya da fiyatı uzun süre hiç değişmeyen fonlar düzenli sayılmadı.</li>
+        <li>Emeklilik ve gayrimenkul fonları dahil değil. Seçili dönem boyunca düzenli fiyatı olmayan, o dönemden sonra kurulan ya da fiyatı uzun süre hiç değişmeyen fonlar o dönemde listelenmez.</li>
         <li><b>Serbest fonları</b> (adında "serbest" geçenler) yalnızca nitelikli yatırımcılar alabilir. Bankanıza ya da aracı kurumunuza sorun.</li>
         <li>Fiyat, risk, valör ve stopaj TEFAS verisi (Ekofin üzerinden). Pay bölünmeleri düzeltildi.</li>
         <li>Getiriler vergi öncesi. Hesaplayıcı geçmiş ortalamayı ileriye taşır; faizler düşerse gerçek getiri daha az olur.</li>
@@ -405,32 +407,26 @@
     el.hidden=false;
   }
   let lastSig='';
-  const OK='Eksi gün yok';
-  const ORDER={'Eksi gün yok':0,'Seviyesinin en düzenlisi':1};
-  const PILL={'Eksi gün yok':'fz-ok','Seviyesinin en düzenlisi':'fz-warn'};
+  function ozet(){
+    const f=dash.data('fonlar'), t=dash.data('tarama');
+    if(f.status!=='ok'||t.status!=='ok') return {status:(f.status==='error'||t.status==='error')?'error':'loading',data:[]};
+    const ok=f.data.filter(r=>Number(r['d'+per])===1);
+    const best=w=>ok.filter(r=>r.alabilir===w).sort((a,b)=>num(b[TOT()])-num(a[TOT()]))[0]||{};
+    const h=best('Herkes'), q=best('Nitelikli yatırımcı');
+    const D='duzenli_'+per, Y='yeterli_'+per;
+    const levels=t.data.filter(r=>Number(r[D])>0).map(r=>Number(r.risk));
+    const mr=levels.length?Math.max(...levels):null;
+    const t0=t.data[0]||{};
+    return {status:'ok',data:[{yeterli:t.data.reduce((s,r)=>s+Number(r[Y]||0),0),duzenli:t.data.reduce((s,r)=>s+Number(r[D]||0),0),
+      donem_bas:t0['bas_'+per],donem_bit:t0.donem_bit,
+      herkes_kod:h.kod,herkes_getiri:h.kod?num(h[TOT()]):null,nitelikli_kod:q.kod,nitelikli_getiri:q.kod?num(q[TOT()]):null,
+      max_risk:mr,max_risk_sayi:mr==null?0:Number((t.data.find(r=>Number(r.risk)===mr)||{})[D])}]};
+  }
 
-  dash.calc('ozet',{
-    inputs:['fonlar','tarama'],
-    title:'Özet sayılar',
-    description:'Taranan ve eksi günü olmayan fon sayısı; her yatırımcı tipinde 12 ay getirisi en yüksek düzenli fon; düzenli fonu olan en yüksek risk seviyesi.',
-    fn:(fonlar, tarama)=>{
-      const ok=fonlar.filter(r=>r.durum==='Eksi gün yok');
-      const best=t=>ok.filter(r=>r.alabilir===t).sort((a,b)=>Number(b.getiri_1y)-Number(a.getiri_1y))[0]||{};
-      const h=best('Herkes'), q=best('Nitelikli yatırımcı');
-      const levels=tarama.filter(r=>Number(r.eksi_gunu_yok)>0).map(r=>Number(r.risk));
-      const mr=levels.length?Math.max(...levels):null;
-      const t0=tarama[0]||{};
-      return [{yeterli:tarama.reduce((s,r)=>s+Number(r.yeterli_veri),0),duzenli:tarama.reduce((s,r)=>s+Number(r.eksi_gunu_yok),0),
-        donem_bas:t0.donem_bas,donem_bit:t0.donem_bit,
-        herkes_kod:h.kod,herkes_getiri:Number(h.getiri_1y),nitelikli_kod:q.kod,nitelikli_getiri:Number(q.getiri_1y),
-        max_risk:mr,max_risk_sayi:mr==null?0:Number((tarama.find(r=>Number(r.risk)===mr)||{}).eksi_gunu_yok)}];
-    }
-  });
-
-  let per='18';
-  const AVG={'6':'ort_6ay','12':'ort_12ay','18':'ort_18ay'}, TOT={'6':'getiri_6a','12':'getiri_1y','18':'getiri_18ay'};
-  const PTXT={'6':'son 6 ay','12':'son 1 yıl','18':'son 18 ay'};
-  const avg=r=>r[AVG[per]];
+  let per='12';
+  const TOT=()=>'g'+per;
+  const PTXT={'3':'son 3 ay','6':'son 6 ay','9':'son 9 ay','12':'son 1 yıl','18':'son 18 ay'};
+  const avg=r=>r['o'+per];
   let filter='all', riskF='all', sortKey='risk', sortDir=1, query='';
   const accent=()=>dash.colors[0];
 
@@ -449,17 +445,19 @@
     document.getElementById('fz-lg-line').style.background=accent();
   }
   function failed(){const d=document.createElement('div');d.className='fz-fail';d.textContent='Failed to load';return d;}
-  function visible(rows){return rows.filter(r=>(filter==='all'||r.alabilir===filter)&&(riskF==='all'||String(r.risk)===riskF));}
+  const inPer=r=>Number(r['d'+per])===1;
+  function visible(rows){return rows.filter(r=>inPer(r)&&(filter==='all'||r.alabilir===filter)&&(riskF==='all'||String(r.risk)===riskF));}
 
   function fillMarks(){
-    const o=dash.data('ozet');
+    const o=ozet();
     document.querySelectorAll('[data-source=ozet]').forEach(el=>{
       if(o.status==='ok'&&o.data.length){
         const r0=o.data[0];
         const v=el.dataset.field==='donem'?null:r0[el.dataset.field];
         const txt=el.dataset.field==='donem'?(dateTr(r0.donem_bas)+' – '+dateTr(r0.donem_bit))
           :el.dataset.fmt==='pct'?pct(v):el.dataset.fmt==='risk'?(v==null?'—':v+'/7'):(typeof v==='number'?nf0.format(v):(v||'—'));
-        if(typeof v==='number'&&isFinite(v)&&el.dataset.fmt!=='risk'){
+        if(v==null&&el.dataset.fmt==='pct'){el.dataset.cu='';el.textContent='—';}
+        else if(typeof v==='number'&&isFinite(v)&&el.dataset.fmt!=='risk'){
           if(el.dataset.cu!==String(v)){el.dataset.cu=String(v);tween(el,0,v,el.dataset.fmt==='pct'?pct:(x=>nf0.format(Math.round(x))),1200);}
         } else el.textContent=txt;
         el.classList.remove('dash-skeleton');
@@ -507,20 +505,20 @@
     const tr=dash.data('tarama');
     const lev=new Map((tr.status==='ok'?tr.data:[]).map(r=>[String(r.risk),r]));
     for(let rk=1;rk<=7;rk++){
-      const rows=funds.filter(r=>Number(r.risk)===rk).sort((x,y)=>(ORDER[x.durum]-ORDER[y.durum])||(Number(avg(y))-Number(avg(x))));
+      const rows=funds.filter(r=>Number(r.risk)===rk).sort((x,y)=>Number(avg(y))-Number(avg(x)));
       if(!rows.length) continue;
       const gh=add('fz-gh');
-      const okN=rows.filter(r=>r.durum===OK).length;
+      const okN=rows.length;
       const pill=document.createElement('span');pill.className='fz-pill';
       pill.style.cssText=`color:#fff;background:${RISKC[rk-1]};border-color:${RISKC[rk-1]};font-weight:600`;
       pill.textContent='Risk '+rk;
       const s=document.createElement('span');
       const L=lev.get(String(rk));
-      s.textContent=okN?`${nf0.format(okN)} fon son 12 ayda hiç eksi gün görmedi`+(L?` (${nf0.format(Number(L.yeterli_veri))} fondan)`:''):'Bu seviyede eksi günü olmayan fon yok; en az eksi günü olanlar';
+      s.textContent=`${nf0.format(okN)} fon ${PTXT[per]}da hiç eksi gün görmedi`+(L&&filter==='all'?` (${nf0.format(Number(L['yeterli_'+per]))} fondan)`:'');
       gh.append(pill,s);
       rows.forEach(r=>{
         const rl=add('fz-rl');
-        const b=document.createElement('b');b.textContent=r.kod+(r.durum===OK?'':` · ${nf0.format(num(r.eksi_gun))} eksi gün`);
+        const b=document.createElement('b');b.textContent=r.kod;
         {const ic=stIcon(r); if(ic) b.append(ic);}
         const s2=document.createElement('span');s2.textContent=r.ad;s2.title=r.ad;
         rl.append(b,s2);
@@ -535,7 +533,7 @@
         });
         const av=add('fz-c fz-avg',nf2.format(num(avg(r))));
         av.dataset.kod=r.kod;av.dataset.ay='avg';av.style.setProperty('--i',months.length);
-        const tt=add('fz-c fz-avg',nf1.format(num(r[TOT[per]])));
+        const tt=add('fz-c fz-avg',nf1.format(num(r[TOT()])));
         tt.dataset.kod=r.kod;tt.dataset.ay='avg';tt.style.setProperty('--i',months.length+1);
       });
     }
@@ -556,7 +554,7 @@
         t1.textContent=k+' · '+PTXT[per];
         const b=document.createElement('b');b.textContent=pct(avg(r));
         t2.append('Aylık ortalama ',b);
-        t3.textContent='Dönemde toplam '+pct(r[TOT[per]])+' · son 12 ayda '+nf0.format(num(r.eksi_gun))+' eksi gün';
+        t3.textContent='Dönemde toplam '+pct(r[TOT()])+' · eksi gün yok';
       }else{
         const c=cell.get(k+'|'+m);
         t1.textContent=k+' · '+MONTHS[Number(m.slice(5,7))-1]+' '+m.slice(0,4);
@@ -586,20 +584,19 @@
     {f:'kod',l:'Kod',cls:'fz-key'},
     {f:'ad',l:'Fon',cls:'fz-name'},
     {f:'risk',l:'Risk',n:true,fmt:v=>nf0.format(v)+'/7'},
-    {f:'durum',l:'Durum',pill:true},
     {f:'alabilir',l:'Kim alabilir'},
     {f:'tur',l:'Fon türü'},
+    {f:'_avg',l:()=>'Aylık ort. ('+PTXT[per]+')',n:true,fmt:pct},
+    {f:'_tot',l:()=>'Toplam ('+PTXT[per]+')',n:true,fmt:pct,bar:true},
     {f:'getiri_1a',l:'1 ay',n:true,fmt:pct},
-    {f:'getiri_3a',l:'3 ay',n:true,fmt:pct},
-    {f:'getiri_6a',l:'6 ay',n:true,fmt:pct},
-    {f:'getiri_1y',l:'12 ay',n:true,fmt:pct,bar:true},
-    {f:'getiri_18ay',l:'18 ay',n:true,fmt:pct},
-    {f:'ort_6ay',l:'Aylık ort. (6 ay)',n:true,fmt:pct},
-    {f:'ort_12ay',l:'Aylık ort. (12 ay)',n:true,fmt:pct},
-    {f:'ort_18ay',l:'Aylık ort. (18 ay)',n:true,fmt:pct},
-    {f:'en_dusuk_ay',l:'En düşük ay (12 ay)',n:true,fmt:pct},
-    {f:'eksi_gun',l:'Eksi gün (12 ay)',n:true,fmt:v=>nf0.format(v)},
-    {f:'en_buyuk_dusus',l:'En büyük düşüş (12 ay)',n:true,fmt:pct},
+    {f:'g3',l:'3 ay',n:true,fmt:pct},
+    {f:'g6',l:'6 ay',n:true,fmt:pct},
+    {f:'g9',l:'9 ay',n:true,fmt:pct},
+    {f:'g12',l:'12 ay',n:true,fmt:pct},
+    {f:'g18',l:'18 ay',n:true,fmt:pct},
+    {f:'e12',l:'Eksi gün (12 ay)',n:true,fmt:v=>nf0.format(v)},
+    {f:'e18',l:'Eksi gün (18 ay)',n:true,fmt:v=>nf0.format(v)},
+    {f:'_dd',l:()=>'En büyük düşüş ('+PTXT[per]+')',n:true,fmt:pct},
     {f:'portfoy_mn_tl',l:'Büyüklük',n:true,fmt:size},
     {f:'yatirimci',l:'Yatırımcı',n:true,fmt:v=>nf0.format(v)},
     {f:'alis_valor',l:'Alış valörü'},
@@ -608,6 +605,7 @@
     {f:'tefas',l:'TEFAS'},
     {f:'kurucu',l:'Kurucu'}
   ];
+  const colL=c=>typeof c.l==='function'?c.l():c.l;
 
   function drawHead(){
     const tr=document.getElementById('fz-thead');
@@ -618,7 +616,7 @@
       th.className='fz-th'+(c.n?' fz-num':'');
       th.setAttribute('aria-sort',sortKey===c.f?(sortDir>0?'ascending':'descending'):'none');
       const b=document.createElement('button');b.type='button';
-      b.textContent=c.l+(sortKey===c.f?(sortDir>0?' ↑':' ↓'):'');
+      b.textContent=colL(c)+(sortKey===c.f?(sortDir>0?' ↑':' ↓'):'');
       b.addEventListener('click',()=>{
         if(sortKey===c.f) sortDir=-sortDir; else {sortKey=c.f;sortDir=c.n?-1:1;}
         drawTable();
@@ -640,14 +638,14 @@
     }
     const col=COLS.find(c=>c.f===sortKey);
     const q=query.trim().toLocaleLowerCase('tr-TR');
-    let rows=visible(f.data).filter(r=>!q||[r.kod,r.ad,r.kurucu].join(' ').toLocaleLowerCase('tr-TR').includes(q));
+    let rows=visible(f.data).filter(r=>!q||[r.kod,r.ad,r.kurucu].join(' ').toLocaleLowerCase('tr-TR').includes(q))
+      .map(r=>Object.assign({},r,{_avg:r['o'+per],_tot:r['g'+per],_dd:r['dd'+per]}));
     rows.sort((a,b)=>{
-      const tie=()=>(ORDER[a.durum]-ORDER[b.durum])||(Number(b.ort_12ay)-Number(a.ort_12ay));
-      if(sortKey==='durum'){const d=(ORDER[a.durum]-ORDER[b.durum])*sortDir;if(d)return d;return Number(b.ort_12ay)-Number(a.ort_12ay);}
+      const tie=()=>num(b._avg)-num(a._avg);
       if(col&&col.n) return (((num(a[sortKey])??-1e9)-(num(b[sortKey])??-1e9))*sortDir)||tie();
       return String(a[sortKey]).localeCompare(String(b[sortKey]),'tr')*sortDir;
     });
-    const maxY=d3.max(f.data,r=>Math.abs(num(r.getiri_1y)||0))||1;
+    const maxY=d3.max(rows,r=>Math.abs(num(r._tot)||0))||1;
     rows.forEach(r=>{
       const tr=document.createElement('tr');
       COLS.forEach(c=>{
@@ -655,8 +653,7 @@
         if(c.n) td.classList.add('fz-num');
         if(c.cls) td.classList.add(c.cls);
         const v=r[c.f];
-        if(c.pill){const s=document.createElement('span');s.className='fz-pill '+(PILL[v]||'');s.textContent=v;td.append(s);}
-        else if(c.bar){
+        if(c.bar){
           const w=document.createElement('div');w.className='fz-bar';
           const i=document.createElement('i');i.style.width=Math.max(2,Math.round(Math.abs(num(v)||0)/maxY*56))+'px';
           i.style.setProperty('--fz-accent',accent());
@@ -698,17 +695,18 @@
   function fillFunds(){
     const f=dash.data('fonlar'); const sel=$('fz-c-fon');
     if(f.status!=='ok') return false;
-    if(sel.options.length!==f.data.length+1||sel.dataset.per!==per){
+    const list=f.data.filter(inPer);
+    if(sel.options.length!==list.length+1||sel.dataset.per!==per){
       sel.dataset.per=per;
-      const sorted=[...f.data].sort((a,b)=>(Number(a.risk)-Number(b.risk))||(ORDER[a.durum]-ORDER[b.durum])||(Number(avg(b))-Number(avg(a))));
+      const sorted=list.sort((a,b)=>(Number(a.risk)-Number(b.risk))||(Number(avg(b))-Number(avg(a))));
       sel.replaceChildren();
       const ph=document.createElement('option');ph.value='';ph.textContent='Fon seçin…';sel.append(ph);
       sorted.forEach(r=>{
         const o=document.createElement('option');o.value=r.kod;
-        o.textContent=`Risk ${r.risk} · ${r.kod} · aylık %${nf2.format(num(avg(r)))} · ${r.alabilir==='Herkes'?'herkes alabilir':'nitelikli'}${r.durum!==OK?' · '+nf0.format(num(r.eksi_gun))+' eksi gün':''}`;
+        o.textContent=`Risk ${r.risk} · ${r.kod} · aylık %${nf2.format(num(avg(r)))} · ${r.alabilir==='Herkes'?'herkes alabilir':'nitelikli'}`;
         sel.append(o);
       });
-      const keep=calcFund&&f.data.some(r=>r.kod===calcFund);
+      const keep=calcFund&&list.some(r=>r.kod===calcFund);
       sel.value=keep?calcFund:'';
       if(!keep) setFund('');
     }
@@ -821,8 +819,8 @@
       +(pl?' Her fon kendi ortalamasıyla hesaplanır; "sonda" alanındaki değişiklik hepsine aynı oranda uygulanır. Satıra tıklayınca fon hesaplayıcıda seçilir.'
           :' Hesaplayıcıda fon seçip tutar girince her fonun dönem sonu birikimi burada görünür. Satıra tıklayınca fon hesaplayıcıda seçilir.');
     if(f.status!=='ok') return;
-    let pool=visible(f.data).sort((a,b)=>(ORDER[a.durum]-ORDER[b.durum])||(Number(avg(b))-Number(avg(a))));
-    pool=riskF==='all'?pool.filter(r=>r.durum===OK).slice(0,15):pool.slice(0,40);
+    let pool=visible(f.data).sort((a,b)=>Number(avg(b))-Number(avg(a)));
+    pool=riskF==='all'?pool.slice(0,15):pool.slice(0,40);
     const sel=f.data.find(r=>r.kod===calcFund);
     if(pl&&sel&&!pool.includes(sel)) pool.push(sel);
     let rows=pool.map(r=>{
@@ -837,7 +835,7 @@
       if(o.r.kod===calcFund){tr.className='fz-sel';tr.style.setProperty('--fz-accent',accent());}
       const td0=document.createElement('td');
       const dot=document.createElement('i');dot.style.cssText=`display:inline-block;width:.5rem;height:.5rem;border-radius:50%;margin-right:.4rem;background:${RISKC[Number(o.r.risk)-1]}`;
-      td0.append(dot,o.r.kod+' · risk '+o.r.risk+(o.r.durum!==OK?' ('+nf0.format(num(o.r.eksi_gun))+' eksi gün)':''));
+      td0.append(dot,o.r.kod+' · risk '+o.r.risk);
       {const ic=stIcon(o.r); if(ic) td0.append(ic);}
       tr.append(td0);
       [o.r.alabilir,pct(avg(o.r)),o.v==null?'—':tl(o.v),o.v==null?'—':tl(o.g),o.v==null?'—':tl(o.net)].forEach(x=>{
@@ -862,14 +860,15 @@
       return;
     }
     box.classList.remove('dash-skeleton');
-    const max=d3.max(d.data,r=>Number(r.yeterli_veri))||1;
+    const Y='yeterli_'+per, D='duzenli_'+per;
+    const max=d3.max(d.data,r=>Number(r[Y]))||1;
     [...d.data].sort((a,b)=>Number(a.risk)-Number(b.risk)).forEach(r=>{
       const b=document.createElement('button');b.type='button';b.className='fz-rr';
       b.setAttribute('aria-pressed',String(riskF===String(r.risk)));
       const lab=document.createElement('span');lab.textContent='Risk '+r.risk;
       const tr=document.createElement('span');tr.className='fz-track';
       const fill=document.createElement('span');fill.className='fz-fill';fill.style.background=RISKC[Number(r.risk)-1]||accent();
-      const tw=(Number(r.yeterli_veri)/max*100)+'%', fw=(Number(r.yeterli_veri)?Number(r.eksi_gunu_yok)/Number(r.yeterli_veri)*100:0)+'%';
+      const tw=(Number(r[Y])/max*100)+'%', fw=(Number(r[Y])?Number(r[D])/Number(r[Y])*100:0)+'%';
       lab.style.cssText='display:flex;align-items:center;gap:.4rem';
       const dot=document.createElement('i');dot.style.cssText=`width:.6rem;height:.6rem;border-radius:50%;background:${RISKC[Number(r.risk)-1]};flex:none`;lab.prepend(dot);
       if(MOTION&&!riskDrawn){tr.style.width='0';fill.style.width='0';const di=Number(r.risk)*90;
@@ -878,9 +877,10 @@
       tr.append(fill);
       const wrapT=document.createElement('span');wrapT.append(tr);
       const c=document.createElement('span');c.className='fz-cnt';
-      const bb=document.createElement('b');bb.textContent=nf0.format(Number(r.eksi_gunu_yok));
-      c.append(bb,' / '+nf0.format(Number(r.yeterli_veri))+' fon');
+      const bb=document.createElement('b');bb.textContent=nf0.format(Number(r[D]));
+      c.append(bb,' / '+nf0.format(Number(r[Y]))+' fon');
       b.append(lab,wrapT,c);
+      if(!Number(r[D])){b.disabled=true;b.style.opacity='.55';}
       b.addEventListener('click',()=>setRisk(riskF===String(r.risk)?'all':String(r.risk)));
       box.append(b);
     });
@@ -914,7 +914,7 @@
     document.querySelectorAll('.fz-per-txt').forEach(x=>x.textContent=PTXT[per]);
     document.querySelectorAll('.fz-per-cap').forEach(x=>x.textContent=PTXT[per][0].toLocaleUpperCase('tr-TR')+PTXT[per].slice(1));
     if(calcFund) setFund(calcFund);
-    drawHeat();drawCalc();
+    riskButtons();fillMarks();drawHeat();drawTable();drawCalc();
   }));
   document.querySelectorAll('.fz-seg button[data-f]').forEach(b=>b.addEventListener('click',()=>{
     filter=b.dataset.f;
@@ -926,11 +926,12 @@
   // fonu olmayan risk düğmelerini gizle
   function riskButtons(){
     const f=dash.data('fonlar'); if(f.status!=='ok') return;
-    const has=new Set(f.data.map(r=>String(r.risk)));
+    const has=new Set(f.data.filter(inPer).map(r=>String(r.risk)));
     for(let rk=1;rk<=7;rk++){const b=$('fz-r-'+rk); if(b) b.hidden=!has.has(String(rk));}
-    if(riskF!=='all'&&!has.has(riskF)) setRisk('all');
+    if(riskF!=='all'&&!has.has(riskF)){riskF='all';document.querySelectorAll('.fz-risk button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.r==='all')));}
   }
   dash.onData(()=>{riskButtons();legend();fillMarks();drawHeat();drawTable();drawCalc();lastSig=statusSig();drawLive();});
+  let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(drawCalc,150);});
   setInterval(()=>{const s=statusSig(); if(s!==lastSig){lastSig=s;drawHeat();drawTable();} drawLive();},60000);
 })();
 </script>

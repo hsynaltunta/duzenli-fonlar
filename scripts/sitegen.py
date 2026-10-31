@@ -116,9 +116,6 @@ def build(root, uretildi, son_guncelleme):
     os.makedirs(pub, exist_ok=True)
     page = open(os.path.join(root, 'page.html'), encoding='utf-8').read()
     page = page.replace("d.textContent='Failed to load'", "d.textContent='Yüklenemedi'")
-    page = page.replace("  dash.onData(()=>{legend();fillMarks();drawHeat();drawTable();drawCalc();});",
-                        "  dash.onData(()=>{legend();fillMarks();drawHeat();drawTable();drawCalc();});\n"
-                        "  let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(drawCalc,150);});")
     with open(os.path.join(pub, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(HEAD + page + FOOT)
     data = {}
