@@ -100,7 +100,7 @@ svg text{fill:var(--color-fg-muted);font-size:11px;font-family:var(--font-anthro
 
 FOOT = '''
 <footer class="site-foot">
-  <span>Veriler TEFAS fiyatlarıdır (Ekofin üzerinden). Her gün, gün boyunca her fon kendi fiyat yayınlama saatinden sonra otomatik güncellenir; her gece tüm fonlar yeniden taranır. TEFAS hafta sonu ve resmi tatillerde fiyat yayınlamaz; bu günlerde fiyatlar son iş gününde kalır. Getiriler vergi öncesidir.</span>
+  <span>Veriler TEFAS fiyatlarıdır (Ekofin üzerinden). Veriler tek merkezden güncellenir, herkes aynı veriyi görür: her gün 07:00–19:00 arasında saat başı yeni fiyatlar alınır, her gece 23:35'te tüm fonlar yeniden taranır. TEFAS hafta sonu ve resmi tatillerde fiyat yayınlamaz; bu günlerde fiyatlar son iş gününde kalır. Getiriler vergi öncesidir.</span>
   <span>Geçmiş getiri geleceği garanti etmez. <b>Bu site yatırım tavsiyesi değildir</b>; karar vermeden önce bankanıza ya da aracı kurumunuza danışın.</span>
   <span><a href="gizlilik.html" style="color:inherit">Gizlilik politikası</a></span>
 </footer>

@@ -15,7 +15,6 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, 'data')
 PRICES = os.path.join(DATA, 'prices')
 TR = dt.timezone(dt.timedelta(hours=3))  # Türkiye saati (yaz saati yok)
-LEAD = 45  # öğrenilen saatten bu kadar dakika önce kontrole başla
 TYPES = ('Menkul Kıymet Yatırım Fonları', 'Borsa Yatırım Fonları')
 
 
@@ -138,18 +137,8 @@ def intraday():
     state = jload(os.path.join(DATA, 'state.json'), {})
     if not sel:
         sys.exit('Seçim yok; önce nightly çalışmalı.')
-    any_today = any(s.get('seen_day') == today for s in state.values())
-    holiday_like = nowm >= 12 * 60 and not any_today
-    due = []
-    for k in sel:
-        s = state.get(k, {})
-        if s.get('seen_day') == today:
-            continue
-        exp = expected(s)
-        if holiday_like and now.minute >= 15:
-            continue  # öğlene kadar hiç fiyat gelmediyse (tatil olabilir) saatte bir bak
-        if exp is None or nowm >= exp - LEAD:
-            due.append(k)
+    # saat başı turu: bugün henüz güncellenmemiş tüm fonlara bakılır
+    due = [k for k in sel if state.get(k, {}).get('seen_day') != today]
     print(now.strftime('%d.%m %H:%M'), 'kontrol edilecek fon:', len(due), flush=True)
     if not due:
         render()
@@ -161,10 +150,10 @@ def intraday():
         s = state.setdefault(k, {})
         newest = max(o['prices'])
         prev = s.get('checked_at')
-        watched = False  # fon son 40 dakikada zaten kontrol edilmişse yeni fiyatın çıkış saati güvenilirdir
+        watched = False  # fon bir önceki saat başı turunda kontrol edildiyse yeni fiyatın çıkış saati (saat hassasiyetinde) bilinir
         if prev:
             try:
-                watched = 0 <= (now - dt.datetime.fromisoformat(prev)).total_seconds() <= 40 * 60
+                watched = 0 <= (now - dt.datetime.fromisoformat(prev)).total_seconds() <= 70 * 60
             except ValueError:
                 pass
         s['checked_at'] = now.isoformat(timespec='minutes')

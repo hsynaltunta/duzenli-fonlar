@@ -2,7 +2,7 @@ name: Fon verilerini güncelle
 
 on:
   schedule:
-    - cron: '*/15 4-20 * * *'     # her gün 07:00–23:45 (İstanbul): saati gelen fonlar
+    - cron: '0 4-16 * * *'        # her gün 07:00–19:00 (İstanbul) saat başı: bugün güncellenmemiş fonlar
     - cron: '35 20 * * *'         # her gün 23:35 (İstanbul): tüm fonların taranması
   workflow_dispatch:
     inputs:
