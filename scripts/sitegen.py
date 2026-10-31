@@ -102,6 +102,7 @@ FOOT = '''
 <footer class="site-foot">
   <span>Veriler TEFAS fiyatlarıdır (Ekofin üzerinden). Hafta içi gün boyunca her fon kendi fiyat yayınlama saatinden sonra otomatik güncellenir; her gece tüm fonlar yeniden taranır. Getiriler vergi öncesidir.</span>
   <span>Geçmiş getiri geleceği garanti etmez. <b>Bu site yatırım tavsiyesi değildir</b>; karar vermeden önce bankanıza ya da aracı kurumunuza danışın.</span>
+  <span><a href="gizlilik.html" style="color:inherit">Gizlilik politikası</a></span>
 </footer>
 </main>
 <script>dash._run();</script>
@@ -128,5 +129,10 @@ def build(root, uretildi, son_guncelleme):
     data['son_guncelleme'] = son_guncelleme
     with open(os.path.join(pub, 'data.json'), 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
+    import shutil
+    for extra in ('gizlilik.html',):
+        src = os.path.join(root, extra)
+        if os.path.exists(src):
+            shutil.copy(src, os.path.join(pub, extra))
     with open(os.path.join(pub, '.nojekyll'), 'w') as f:
         f.write('')

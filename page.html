@@ -3,6 +3,7 @@
 .fz h1{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);margin:0;text-wrap:balance}
 .fz h1.fz-title{letter-spacing:.06em}
 .fz-filters{display:flex;flex-wrap:wrap;gap:var(--cds-gap-sm)}
+#fz-risk-chart:not(.dash-skeleton){min-height:0}
 #fz-risk-chart{min-height:10rem;position:relative;display:flex;flex-direction:column;gap:2px}
 #fz-risk-chart .fz-rr{display:grid;grid-template-columns:4.5rem minmax(0,1fr) 8rem;align-items:center;gap:var(--cds-gap-sm);padding:var(--cds-pad-xs) var(--cds-pad-xs);cursor:pointer;border-radius:var(--cds-radius);font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums;border:0;background:transparent;color:var(--color-fg);font-family:inherit;text-align:left}
 #fz-risk-chart .fz-rr:hover,#fz-risk-chart .fz-rr[aria-pressed=true]{background:color-mix(in srgb, var(--color-fg) 6%, transparent)}
