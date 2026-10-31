@@ -132,13 +132,8 @@ def finish(r):
 
 
 def select(rows):
-    """Eksi günü olmayan tüm fonlar; 3'ten az olan seviyelerde en az eksi günü olan 5 fon."""
+    """Yalnız son 12 ayda hiç eksi günü olmayan fonlar."""
     out = [r for r in rows if r['regular']]
-    for rk in range(1, 8):
-        if sum(1 for r in out if r['risk'] == rk) < 3:
-            cand = sorted([r for r in rows if r['risk'] == rk and not r['regular'] and r['getiri_1y'] > 0],
-                          key=lambda r: (r['eksi_gun'], -r['en_buyuk_dusus'], -r['ort_12ay']))[:5]
-            out += cand
     for r in out:
-        r['durum'] = 'Eksi gün yok' if r['regular'] else 'Seviyesinin en düzenlisi'
+        r['durum'] = 'Eksi gün yok'
     return out

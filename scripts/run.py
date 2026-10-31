@@ -192,7 +192,8 @@ def render():
     rows, mon, _, END, _ = compute.compute(recs, meta)
     out = []
     for r in rows:
-        if r['kod'] not in sel:
+        # gün içinde eksi gün gören fon listeden çıkar
+        if r['kod'] not in sel or not r['regular']:
             continue
         r['durum'] = sel[r['kod']]
         del r['regular']

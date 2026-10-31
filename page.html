@@ -106,6 +106,7 @@
 @keyframes fzPulse{0%,100%{opacity:.25;r:5}50%{opacity:1;r:8}}
 @keyframes fzFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(30px,-20px) scale(1.15)}}
 .fz-seg button{transition:background .2s,color .2s,transform .15s}
+.fz-seg button[hidden]{display:none}
 .fz-seg button:hover{background:color-mix(in srgb,var(--fz-blue) 10%,transparent);color:var(--color-fg)}
 .fz-seg button:active{transform:scale(.96)}
 .fz-seg button[aria-pressed=true]{background:var(--fz-grad);color:#fff;box-shadow:0 2px 8px -2px rgba(37,99,235,.5)}
@@ -179,7 +180,7 @@
       <span data-source="ozet" data-field="donem" data-row="0" class="dash-skeleton">—</span> arasında güncel fiyatı olan
       <b data-source="ozet" data-field="yeterli" data-row="0" class="dash-skeleton">—</b> yatırım fonundan
       <b data-source="ozet" data-field="duzenli" data-row="0" class="dash-skeleton">—</b> tanesi son 12 ayda hiç eksi gün görmedi.
-      Fonlar risk seviyesine göre 1'den 7'ye gruplu; eksi günü olmayan en düzenli fonlar gösteriliyor.
+      Bu uygulamanın amacı kullanıcıya en az riskle sürekli getiri sağlayan fonları sıralamak.
     </p>
     <p class="fz-live" id="fz-live" hidden></p>
     <p class="fz-disc"><span><b>Yatırım tavsiyesi değildir.</b> Bu sayfa geçmiş verileri gösterir; geçmiş getiri geleceği garanti etmez.</span></p>
@@ -816,7 +817,7 @@
     $('fz-cmp-title').textContent=riskF==='all'?'Aynı plan diğer düzenli fonlarda':`Risk ${riskF} fonları`+(pl?' · aynı plan':'');
     $('fz-cmp-note').textContent=(riskF==='all'
         ?'Seçili filtrelerde eksi günü olmayan ve '+PTXT[per]+' ortalaması en yüksek 15 fon.'
-        :'Bu seviyedeki fonlar; eksi günü olmayanlar üstte, '+PTXT[per]+' ortalamasına göre sıralı.')
+        :'Bu seviyedeki eksi günü olmayan fonlar; '+PTXT[per]+' ortalamasına göre sıralı.')
       +(pl?' Her fon kendi ortalamasıyla hesaplanır; "sonda" alanındaki değişiklik hepsine aynı oranda uygulanır. Satıra tıklayınca fon hesaplayıcıda seçilir.'
           :' Hesaplayıcıda fon seçip tutar girince her fonun dönem sonu birikimi burada görünür. Satıra tıklayınca fon hesaplayıcıda seçilir.');
     if(f.status!=='ok') return;
@@ -848,6 +849,7 @@
     });
   }
   function setRisk(r){
+    if(r!=='all'&&$('fz-r-'+r)&&$('fz-r-'+r).hidden) r='all';
     riskF=r;
     document.querySelectorAll('.fz-risk button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.r===r)));
     drawRisk();drawHeat();drawTable();drawCalc();
@@ -921,7 +923,14 @@
   }));
   document.getElementById('fz-search').addEventListener('input',e=>{query=e.target.value;drawTable();});
 
-  dash.onData(()=>{legend();fillMarks();drawHeat();drawTable();drawCalc();lastSig=statusSig();drawLive();});
+  // fonu olmayan risk düğmelerini gizle
+  function riskButtons(){
+    const f=dash.data('fonlar'); if(f.status!=='ok') return;
+    const has=new Set(f.data.map(r=>String(r.risk)));
+    for(let rk=1;rk<=7;rk++){const b=$('fz-r-'+rk); if(b) b.hidden=!has.has(String(rk));}
+    if(riskF!=='all'&&!has.has(riskF)) setRisk('all');
+  }
+  dash.onData(()=>{riskButtons();legend();fillMarks();drawHeat();drawTable();drawCalc();lastSig=statusSig();drawLive();});
   setInterval(()=>{const s=statusSig(); if(s!==lastSig){lastSig=s;drawHeat();drawTable();} drawLive();},60000);
 })();
 </script>
