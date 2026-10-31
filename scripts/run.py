@@ -158,11 +158,20 @@ def intraday():
     for k, o in got.items():
         s = state.setdefault(k, {})
         newest = max(o['prices'])
+        prev = s.get('checked_at')
+        watched = False  # fon son 40 dakikada zaten kontrol edilmişse yeni fiyatın çıkış saati güvenilirdir
+        if prev:
+            try:
+                watched = 0 <= (now - dt.datetime.fromisoformat(prev)).total_seconds() <= 40 * 60
+            except ValueError:
+                pass
+        s['checked_at'] = now.isoformat(timespec='minutes')
         if newest > s.get('last_date', ''):
             s['last_date'] = newest
             s['seen_day'] = today
             s['seen_at'] = now.strftime('%H:%M')
-            s['obs'] = (s.get('obs') or [])[-19:] + [nowm]
+            if watched and now.weekday() < 5:
+                s['obs'] = (s.get('obs') or [])[-19:] + [nowm]
             jsave(os.path.join(PRICES, k + '.json'), o)
             changed.append(k)
     print('güncellenen:', len(changed), ' '.join(sorted(changed)), '| hata:', len(fail), flush=True)
