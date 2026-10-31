@@ -1,0 +1,67 @@
+name: Fon verilerini güncelle
+
+on:
+  schedule:
+    - cron: '*/15 4-20 * * 1-5'   # hafta içi 07:00–23:45 (İstanbul): saati gelen fonlar
+    - cron: '35 20 * * 1-5'       # hafta içi 23:35 (İstanbul): tüm fonların taranması
+  workflow_dispatch:
+    inputs:
+      mod:
+        description: 'intraday (saati gelen fonlar), nightly (tam tarama) ya da render (yalnız site)'
+        default: intraday
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fon-guncelle
+  cancel-in-progress: false
+
+jobs:
+  guncelle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verileri güncelle
+        env:
+          MOD: ${{ github.event.schedule == '35 20 * * 1-5' && 'nightly' || inputs.mod || 'intraday' }}
+        run: |
+          echo "Mod: $MOD"
+          python scripts/run.py "$MOD"
+
+      - name: Değişiklik var mı
+        id: diff
+        run: |
+          git add -A data
+          if git diff --cached --quiet; then echo "changed=0" >> "$GITHUB_OUTPUT"; else echo "changed=1" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Veriyi kaydet
+        if: steps.diff.outputs.changed == '1'
+        run: |
+          git config user.name "fon-guncelleme"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -m "Veri: $(TZ=Europe/Istanbul date '+%d.%m.%Y %H:%M')"
+          git push
+
+      - uses: actions/configure-pages@v5
+        if: steps.diff.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.diff.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        with:
+          path: public
+
+      - id: deploy
+        if: steps.diff.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        uses: actions/deploy-pages@v4
