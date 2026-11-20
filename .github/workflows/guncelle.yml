@@ -2,8 +2,10 @@ name: Fon verilerini güncelle
 
 on:
   schedule:
-    - cron: '0 4-16 * * *'        # her gün 07:00–19:00 (İstanbul) saat başı: bugün güncellenmemiş fonlar
-    - cron: '35 20 * * *'         # her gün 23:35 (İstanbul): tüm fonların taranması
+    # Saat başı turlarını asıl olarak saat.yml başlatır; bu satır yalnız yedek.
+    # GitHub zamanlayıcısı saat başlarında tetiklemeleri geciktirip düşürebildiği için dakikalar kaydırıldı.
+    - cron: '17 4-16 * * *'       # yedek: her gün 07:17–19:17 (İstanbul)
+    - cron: '47 20 * * *'         # her gün 23:47 (İstanbul): tüm fonların taranması
   workflow_dispatch:
     inputs:
       mod:
@@ -27,7 +29,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      # Geciken bir tur, tetiklendiği andaki eski kodu değil ana dalın son halini alsın
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
 
       - uses: actions/setup-python@v5
         with:
@@ -35,7 +40,7 @@ jobs:
 
       - name: Verileri güncelle
         env:
-          MOD: ${{ github.event.schedule == '35 20 * * *' && 'nightly' || inputs.mod || 'intraday' }}
+          MOD: ${{ github.event.schedule == '47 20 * * *' && 'nightly' || inputs.mod || 'intraday' }}
         run: |
           echo "Mod: $MOD"
           python scripts/run.py "$MOD"
@@ -52,7 +57,12 @@ jobs:
           git config user.name "fon-guncelleme"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -q -m "Veri: $(TZ=Europe/Istanbul date '+%d.%m.%Y %H:%M')"
-          git push
+          # arada başka bir kayıt girdiyse onun üstüne al ve yeniden dene
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull -q --rebase
+          done
+          exit 1
 
       - uses: actions/configure-pages@v5
         if: steps.diff.outputs.changed == '1' || github.event_name == 'workflow_dispatch'

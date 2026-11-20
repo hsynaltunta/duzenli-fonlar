@@ -1,0 +1,69 @@
+name: Saat başı tetikleyici
+
+# GitHub'ın zamanlayıcısı saat başı tetiklemelerini saatlerce geciktirip düşürebiliyor.
+# Bu görev gün içinde açık kalır ve 07:00–19:00 (İstanbul) arasında her saat başında
+# "Fon verilerini güncelle" görevini kendisi başlatır. Bir çalışma en fazla ~6 saat
+# sürebildiği için süresi dolmadan kendini yeniden başlatır. Aşağıdaki zamanlar yalnız
+# günün ilk başlangıcı ve zincir koparsa yeniden kurmak içindir; hangisi önce gelirse o başlatır.
+
+on:
+  schedule:
+    - cron: '41 3 * * *'    # 06:41
+    - cron: '23 4 * * *'    # 07:23
+    - cron: '29 5 * * *'    # 08:29
+    - cron: '11 7 * * *'    # 10:11
+    - cron: '37 9 * * *'    # 12:37
+    - cron: '13 12 * * *'   # 15:13
+  workflow_dispatch:
+    inputs:
+      son:
+        description: 'son başlatılan tur (YYYY-AA-GG-saat), yeniden başlarken aynı saat tekrarlanmasın'
+        default: ''
+      dene:
+        description: 'yalnız bir kez site yayınını başlatıp çık (tetikleme izni denemesi)'
+        type: boolean
+        default: false
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: saat
+  cancel-in-progress: false
+
+jobs:
+  saat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - name: Saat başı güncellemeyi başlat
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SON: ${{ inputs.son }}
+          DENE: ${{ inputs.dene }}
+        run: |
+          if [ "$DENE" = "true" ]; then gh workflow run guncelle.yml -f mod=render; exit $?; fi
+          start=$(date +%s)
+          son="$SON"
+          while :; do
+            H=$((10#$(TZ=Europe/Istanbul date +%H)))
+            tur="$(TZ=Europe/Istanbul date +%F)-$H"
+            if [ "$H" -gt 19 ]; then echo "Bugünkü saat başı turları bitti."; exit 0; fi
+            if [ "$H" -ge 7 ] && [ "$son" != "$tur" ]; then
+              if gh workflow run guncelle.yml -f mod=intraday; then
+                son="$tur"
+                echo "$(TZ=Europe/Istanbul date '+%d.%m %H:%M') güncelleme başlatıldı"
+                if [ "$H" -eq 19 ]; then echo "Son tur da başlatıldı."; exit 0; fi
+              else
+                echo "Başlatılamadı, bir dakika sonra yeniden denenecek."
+              fi
+            fi
+            # çalışma süresi sınırına yaklaşınca yerine yenisini başlat
+            if [ $(( $(date +%s) - start )) -gt $((340 * 60)) ]; then
+              gh workflow run saat.yml -f son="$son" && echo "Saat yeni çalışmayla devam ediyor."
+              exit 0
+            fi
+            sleep 60
+          done

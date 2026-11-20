@@ -6,10 +6,10 @@ Son 12 ayda hiç eksi günü olmayan yatırım fonlarını risk seviyesine göre
 
 ## Nasıl güncellenir
 
-GitHub Actions (`.github/workflows/guncelle.yml`):
+GitHub Actions (`.github/workflows/guncelle.yml` ve `saat.yml`):
 
-- **Her gün 07:00–19:00, saat başı:** bugün henüz yeni fiyatı gelmemiş tüm seçili fonlar kontrol edilir; yeni fiyat görülünce veri GitHub'a kaydedilir ve site yayınlanır. Fonun genelde hangi saatte güncellendiği `data/state.json`'a yazılır.
-- **Her gün 23:35:** TEFAS'taki ~2.000 menkul kıymet ve borsa yatırım fonu baştan taranır, düzenli fon listesi yeniden seçilir.
+- **Her gün 07:00–19:00, saat başı** (`saat.yml` gün içinde açık kalıp her saat başında başlatır; GitHub zamanlayıcısı saat başlarında güvenilir olmadığı için): bugün henüz yeni fiyatı gelmemiş tüm seçili fonlar kontrol edilir; yeni fiyat görülünce veri GitHub'a kaydedilir ve site yayınlanır. Fonun genelde hangi saatte güncellendiği `data/state.json`'a yazılır.
+- **Her gün 23:47:** TEFAS'taki ~2.000 menkul kıymet ve borsa yatırım fonu baştan taranır, düzenli fon listesi yeniden seçilir.
 
 Elle çalıştırmak için: Actions → "Fon verilerini güncelle" → Run workflow.
 
