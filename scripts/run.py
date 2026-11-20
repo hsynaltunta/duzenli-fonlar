@@ -137,8 +137,9 @@ def intraday():
     state = jload(os.path.join(DATA, 'state.json'), {})
     if not sel:
         sys.exit('Seçim yok; önce nightly çalışmalı.')
-    # saat başı turu: bugün henüz güncellenmemiş tüm fonlara bakılır
-    due = [k for k in sel if state.get(k, {}).get('seen_day') != today]
+    # saat başı turu: bugün tarihli fiyatı henüz gelmemiş tüm fonlara bakılır.
+    # (Gece yarısından sonra dünün fiyatını alan fon "bugün güncellendi" sayılıp gün boyu atlanmasın.)
+    due = [k for k in sel if state.get(k, {}).get('last_date', '') < today]
     print(now.strftime('%d.%m %H:%M'), 'kontrol edilecek fon:', len(due), flush=True)
     if not due:
         render()
@@ -161,7 +162,7 @@ def intraday():
             s['last_date'] = newest
             s['seen_day'] = today
             s['seen_at'] = now.strftime('%H:%M')
-            if watched and now.weekday() < 5:
+            if watched and now.weekday() < 5 and newest == today:
                 s['obs'] = (s.get('obs') or [])[-19:] + [nowm]
             jsave(os.path.join(PRICES, k + '.json'), o)
             changed.append(k)
@@ -190,8 +191,10 @@ def render():
         del r['regular']
         s = state.get(r['kod'], {})
         r['beklenen'] = hhmm(expected(s))
-        r['guncellendi_gun'] = s.get('seen_day', '')
-        r['guncellendi_saat'] = s.get('seen_at', '')
+        # "✓ bugün SS:DD" yalnız bugünün tarihli fiyatı geldiyse gösterilir
+        fresh = s.get('seen_day') and s.get('last_date') == s.get('seen_day')
+        r['guncellendi_gun'] = s.get('seen_day', '') if fresh else ''
+        r['guncellendi_saat'] = s.get('seen_at', '') if fresh else ''
         out.append(compute.finish(r))
     with open(os.path.join(DATA, 'fonlar.csv'), 'w', encoding='utf-8', newline='') as f:
         w = csv.DictWriter(f, fieldnames=list(out[0]))
