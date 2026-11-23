@@ -16,6 +16,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  actions: write   # gece taraması ertesi sabahın saat görevini başlatır
 
 concurrency:
   group: fon-guncelle
@@ -27,7 +28,9 @@ jobs:
     timeout-minutes: 90
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url }}
+    env:
+      MOD: ${{ github.event.schedule == '47 20 * * *' && 'nightly' || inputs.mod || 'intraday' }}
     steps:
       # Geciken bir tur, tetiklendiği andaki eski kodu değil ana dalın son halini alsın
       - uses: actions/checkout@v4
@@ -39,8 +42,6 @@ jobs:
           python-version: '3.12'
 
       - name: Verileri güncelle
-        env:
-          MOD: ${{ github.event.schedule == '47 20 * * *' && 'nightly' || inputs.mod || 'intraday' }}
         run: |
           echo "Mod: $MOD"
           python scripts/run.py "$MOD"
@@ -67,11 +68,30 @@ jobs:
       - uses: actions/configure-pages@v5
         if: steps.diff.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         if: steps.diff.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
         with:
           path: public
 
+      # GitHub'ın yayın servisi ara sıra "artifact bulunamadı" diye düşüyor; bir dakika sonra bir kez daha dene
       - id: deploy
         if: steps.diff.outputs.changed == '1' || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
         uses: actions/deploy-pages@v4
+
+      - name: Yayını yeniden denemeden önce bekle
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 60
+
+      - id: deploy2
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+
+      # GitHub zamanlayıcısı sabah tetiklemelerini saatlerce geciktirdiği için ertesi günün saat görevini
+      # (07:00–19:00 saat başı turları) gece taraması başlatır; saat görevi sabahı bekler.
+      - name: Yarının saat görevini başlat
+        if: always() && env.MOD == 'nightly'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow run saat.yml -f sabah=true

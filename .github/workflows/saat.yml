@@ -3,8 +3,8 @@ name: Saat başı tetikleyici
 # GitHub'ın zamanlayıcısı saat başı tetiklemelerini saatlerce geciktirip düşürebiliyor.
 # Bu görev gün içinde açık kalır ve 07:00–19:00 (İstanbul) arasında her saat başında
 # "Fon verilerini güncelle" görevini kendisi başlatır. Bir çalışma en fazla ~6 saat
-# sürebildiği için süresi dolmadan kendini yeniden başlatır. Aşağıdaki zamanlar yalnız
-# günün ilk başlangıcı ve zincir koparsa yeniden kurmak içindir; hangisi önce gelirse o başlatır.
+# sürebildiği için süresi dolmadan kendini yeniden başlatır. Asıl başlatan gece taramasıdır
+# (sabah=true ile, sabahı bekler). Aşağıdaki zamanlar yalnız yedek: zincir koparsa yeniden kurar.
 
 on:
   schedule:
@@ -21,6 +21,10 @@ on:
         default: ''
       dene:
         description: 'yalnız bir kez site yayınını başlatıp çık (tetikleme izni denemesi)'
+        type: boolean
+        default: false
+      sabah:
+        description: 'akşam başlasa da kapanma, ertesi sabahı bekle (gece taraması böyle başlatır)'
         type: boolean
         default: false
 
@@ -43,6 +47,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           SON: ${{ inputs.son }}
           DENE: ${{ inputs.dene }}
+          SABAH: ${{ inputs.sabah }}
         run: |
           if [ "$DENE" = "true" ]; then gh workflow run guncelle.yml -f mod=render; exit $?; fi
           start=$(date +%s)
@@ -50,7 +55,7 @@ jobs:
           while :; do
             H=$((10#$(TZ=Europe/Istanbul date +%H)))
             tur="$(TZ=Europe/Istanbul date +%F)-$H"
-            if [ "$H" -gt 19 ]; then echo "Bugünkü saat başı turları bitti."; exit 0; fi
+            if [ "$H" -gt 19 ] && [ "$SABAH" != "true" ]; then echo "Bugünkü saat başı turları bitti."; exit 0; fi
             if [ "$H" -ge 7 ] && [ "$son" != "$tur" ]; then
               if gh workflow run guncelle.yml -f mod=intraday; then
                 son="$tur"
@@ -62,7 +67,7 @@ jobs:
             fi
             # çalışma süresi sınırına yaklaşınca yerine yenisini başlat
             if [ $(( $(date +%s) - start )) -gt $((340 * 60)) ]; then
-              gh workflow run saat.yml -f son="$son" && echo "Saat yeni çalışmayla devam ediyor."
+              gh workflow run saat.yml -f son="$son" -f sabah="${SABAH:-false}" && echo "Saat yeni çalışmayla devam ediyor."
               exit 0
             fi
             sleep 60
